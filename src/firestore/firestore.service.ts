@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import serviceAccount from '../config/firestore/secret.json';
 import { ConfigService } from '@nestjs/config';
+import { FieldValue } from 'firebase-admin/firestore';
+import { DatabaseTables } from 'src/enums/database-tables.enum';
 
 @Injectable()
 export class FirestoreService {
@@ -15,18 +17,41 @@ export class FirestoreService {
     this.db = admin.firestore();
   }
 
-  async addDocument(collection: string, data: any): Promise<string> {
-    const docRef = await this.db.collection(collection).add(data);
+  async getAllDocuments(collection: DatabaseTables): Promise<any[]> {
+    const snapshot = await this.db.collection(collection).get();
+    return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+  }
+
+  async getDocument(collection: DatabaseTables, id: string): Promise<any> {
+    const doc = await this.db.collection(collection).doc(id).get();
+    return doc.exists ? { ...doc.data(), id: doc.id } : null;
+  }
+
+  async addDocument(collection: DatabaseTables, data: any): Promise<string> {
+    const doc = {
+      ...data,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    };
+    const docRef = await this.db.collection(collection).add(doc);
     return docRef.id;
   }
 
-  async getDocument(collection: string, id: string): Promise<any> {
-    const doc = await this.db.collection(collection).doc(id).get();
-    return doc.exists ? doc.data() : null;
+  async updateDocument(
+    collection: DatabaseTables,
+    id: string,
+    data: any,
+  ): Promise<void> {
+    await this.db
+      .collection(collection)
+      .doc(id)
+      .update({
+        ...data,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
   }
 
-  async getAllDocuments(collection: string): Promise<any[]> {
-    const snapshot = await this.db.collection(collection).get();
-    return snapshot.docs.map((doc) => doc.data());
+  async deleteDocument(collection: DatabaseTables, id: string): Promise<void> {
+    await this.db.collection(collection).doc(id).delete();
   }
 }
