@@ -3,6 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FirestoreModule } from './firestore/firestore.module';
 import { ConfigModule } from '@nestjs/config';
+import { UserRepository } from './repositories/user.repository';
+import { PharmacyRepository } from './repositories/pharmacy.repository';
+import { ReviewRepository } from './repositories/review.repository';
 
 @Module({
   imports: [
@@ -12,6 +15,6 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UserRepository, PharmacyRepository, ReviewRepository],
 })
 export class AppModule {}
