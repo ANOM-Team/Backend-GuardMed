@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PharmacyRepository } from '../repositories/pharmacy.repository';
 import { PharmacyInterface } from '../interfaces/pharmacy.interface';
+import { CreatePharmacyDto } from './dto/create-pharmacy.dto';
+import { UpdatePharmacyDto } from './dto/update-pharmacy.dto';
 
 @Injectable()
 export class PharmacyService {
     constructor(private readonly pharmacyRepository: PharmacyRepository) { }
 
-    async createPharmacy(pharmacy: PharmacyInterface): Promise<string> {
+    async createPharmacy(pharmacy: CreatePharmacyDto): Promise<string> {
         return this.pharmacyRepository.create(pharmacy);
     }
 
@@ -20,9 +22,10 @@ export class PharmacyService {
 
     async updatePharmacy(
         id: string,
-        pharmacy: Partial<PharmacyInterface>,
-    ): Promise<void> {
-        return this.pharmacyRepository.update(id, pharmacy);
+        pharmacy: UpdatePharmacyDto,
+    ): Promise<PharmacyInterface> {
+        await this.pharmacyRepository.update(id, pharmacy);
+        return this.pharmacyRepository.findById(id);
     }
 
     async deletePharmacy(id: string): Promise<void> {
