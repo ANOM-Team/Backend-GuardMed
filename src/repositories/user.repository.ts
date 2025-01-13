@@ -35,4 +35,8 @@ export class UserRepository {
   async delete(id: string): Promise<void> {
     return this.firestoreService.deleteDocument(DatabaseTables.USER, id);
   }
+
+  async removeField(table: string, field: string) {
+    return this.firestoreService.removeField(table, field);
+  }
 }
