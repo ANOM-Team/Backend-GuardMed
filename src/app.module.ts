@@ -6,9 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { UserRepository } from './repositories/user.repository';
 import { PharmacyRepository } from './repositories/pharmacy.repository';
 import { ReviewRepository } from './repositories/review.repository';
-import { UserController } from './auth/user.controller';
 import { UserModule } from './auth/user.module';
-
+import { MailModule } from './mail/mail.module';
 
 @Global()
 @Module({
@@ -17,10 +16,11 @@ import { UserModule } from './auth/user.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    UserModule
+    UserModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService, UserRepository, PharmacyRepository, ReviewRepository],
-  exports: [UserRepository, PharmacyRepository, ReviewRepository]
+  exports: [UserRepository, PharmacyRepository, ReviewRepository, MailModule],
 })
 export class AppModule {}
