@@ -7,6 +7,7 @@ import { UserRepository } from './repositories/user.repository';
 import { PharmacyRepository } from './repositories/pharmacy.repository';
 import { ReviewRepository } from './repositories/review.repository';
 import { FavoritesModule } from './favorites/favorites.module';
+import { PharmacyModule } from './pharmacies/pharmacy.module';
 
 @Global()
 @Module({
@@ -16,6 +17,7 @@ import { FavoritesModule } from './favorites/favorites.module';
       isGlobal: true,
     }),
     FavoritesModule,
+    PharmacyModule,
   ],
   controllers: [AppController],
   providers: [AppService, UserRepository, PharmacyRepository, ReviewRepository],
