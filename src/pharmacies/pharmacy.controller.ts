@@ -7,7 +7,7 @@ import {
     Body,
     Param,
     HttpException,
-    HttpStatus,
+    HttpStatus,Query
 } from '@nestjs/common';
 import { PharmacyService } from './pharmacy.service';
 import { PharmacyInterface } from '../interfaces/pharmacy.interface';
@@ -85,5 +85,16 @@ export class PharmacyController {
                 HttpStatus.INTERNAL_SERVER_ERROR,
             );
         }
+    }
+
+    @Get('nearby-guard')
+    async getNearbyGuardPharmacies(
+      @Query('lat') lat: string,
+      @Query('lng') lng: string,
+    ): Promise<PharmacyInterface[]> {
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
+  
+      return this.pharmacyService.getNearbyGuardPharmacies(latitude, longitude);
     }
 } 

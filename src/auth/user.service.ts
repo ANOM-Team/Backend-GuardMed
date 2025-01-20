@@ -10,7 +10,6 @@ import { RegisterDto } from './dto/register.dto';
 import { VerifyDto } from './dto/verify.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { MailModule } from 'src/mail/mail.module';
 import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
