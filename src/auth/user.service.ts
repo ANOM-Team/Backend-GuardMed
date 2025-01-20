@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { MailModule } from 'src/mail/mail.module';
 import { MailService } from 'src/mail/mail.service';
+import { messaging } from 'firebase-admin';
 
 @Injectable()
 export class UserService {
@@ -24,17 +25,17 @@ export class UserService {
   async login(loginDto: LoginDto) {
     const user = await this.userRepository.findByEmail(loginDto.email);
     if (!user) {
-      return new NotFoundException('User not found');
+      throw new NotFoundException('User not found');
     }
     const isPasswordValid = await bcrypt.compare(
       loginDto.password,
       user.password,
     );
     if (!isPasswordValid) {
-      return new BadRequestException('Invalid password');
+      throw new BadRequestException('Invalid password');
     }
     if (!user.verified) {
-      return new UnauthorizedException('User not verified');
+      throw new UnauthorizedException('User not verified');
     }
     const payload = { username: user.email, sub: user.id };
     return {
@@ -70,15 +71,50 @@ export class UserService {
   async verify(verifyDto: VerifyDto) {
     const user = await this.userRepository.findById(verifyDto.id);
     if (!user) {
-      return new NotFoundException('User not found');
+      throw new NotFoundException('User not found');
     }
     if (user.verified) {
-      return new UnauthorizedException('User already verified');
+      throw new UnauthorizedException('User already verified');
     }
     if (verifyDto.code !== user.code) {
-      return new BadRequestException('Invalid code');
+      throw new BadRequestException('Invalid code');
     }
 
-    return this.userRepository.update(verifyDto.id, { verified: true });
+    const updated = await this.userRepository.update(verifyDto.id, {
+      verified: true,
+    });
+    return { message: 'User verified', status: 200 };
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const code = Math.floor(100000 + Math.random() * 900000);
+    await this.userRepository.update(user.id, { code });
+    await this.mailService.sendResetPassword(email, code);
+    return email;
+  }
+
+  async resetPassword(code: number, email: string) {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (code !== user.code) {
+      throw new BadRequestException('Invalid code');
+    }
+    return true;
+  }
+
+  async newPassword(email: string, password: string) {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await this.userRepository.update(user.id, { password: hashedPassword });
+    return true;
   }
 }
