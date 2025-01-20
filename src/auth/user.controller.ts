@@ -1,8 +1,9 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { VerifyDto } from './dto/verify.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class UserController {
@@ -17,8 +18,19 @@ export class UserController {
   async register(@Body() registerDto: RegisterDto) {
     return this.userService.register(registerDto);
   }
+
   @Post('verify')
   async verify(@Body() verifyDto: VerifyDto) {
     return this.userService.verify(verifyDto);
+  }
+
+  @Post('reset')
+  async resetPassword(@Body() code: number, email: string) {
+    return this.userService.resetPassword(code, email);
+  }
+
+  @Post('new-password')
+  async newPassword(@Body() password: string, email: string) {
+    return this.userService.newPassword(password, email);
   }
 }
