@@ -4,6 +4,7 @@ import serviceAccount from '../config/firestore/secret.json';
 import { ConfigService } from '@nestjs/config';
 import { FieldValue } from 'firebase-admin/firestore';
 import { DatabaseTables } from 'src/enums/database-tables.enum';
+import { firestore } from 'firebase-admin';
 
 @Injectable()
 export class FirestoreService {
@@ -53,5 +54,12 @@ export class FirestoreService {
 
   async deleteDocument(collection: DatabaseTables, id: string): Promise<void> {
     await this.db.collection(collection).doc(id).delete();
+  }
+
+  async removeField(docPath: string, fieldName: string) {
+    const docRef = this.db.doc(docPath);
+    await docRef.update({
+      [fieldName]: firestore.FieldValue.delete(),
+    });
   }
 }

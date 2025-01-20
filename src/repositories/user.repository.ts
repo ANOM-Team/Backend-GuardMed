@@ -28,6 +28,10 @@ export class UserRepository {
     ) as Promise<UserInterface | null>;
   }
 
+  async findByEmail(email: string): Promise<UserInterface | null> {
+    return (await this.findAll()).find((user) => user.email === email) || null;
+  }
+
   async update(id: string, user: Partial<UserInterface>): Promise<void> {
     return this.firestoreService.updateDocument(DatabaseTables.USER, id, user);
   }
@@ -73,5 +77,7 @@ export class UserRepository {
       favorites.map((id) => this.pharmacyRepository.findById(id)),
     );
     return favoritePharmacy;
+  async removeField(table: string, field: string) {
+    return this.firestoreService.removeField(table, field);
   }
 }
