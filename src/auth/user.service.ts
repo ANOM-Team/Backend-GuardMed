@@ -45,7 +45,7 @@ export class UserService {
   async register(registerDto: RegisterDto) {
     const user = await this.userRepository.findByEmail(registerDto.email);
     if (user) {
-      return new BadRequestException('User already exists');
+      throw new BadRequestException('User already exists');
     }
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
     const newUser = {
