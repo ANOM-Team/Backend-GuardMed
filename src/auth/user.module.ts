@@ -5,11 +5,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { JwtStrategy } from './jwt/jwt.strategy';
-import { MailModule } from 'src/mail/mail.module';
-
+import { MailModule } from '../mail/mail.module';
 @Module({
   imports: [
-    ConfigModule,
+    ConfigModule.forRoot(),
+    MailModule,
     PassportModule,
     MailModule,
     JwtModule.registerAsync({
@@ -22,6 +22,6 @@ import { MailModule } from 'src/mail/mail.module';
     }),
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, JwtStrategy],
 })
-export class UserModule {}
+export class UserModule { }

@@ -7,15 +7,18 @@ import {
     Body,
     Param,
     HttpException,
-    HttpStatus,Query
+    HttpStatus,
+    Query,
+    UseGuards,
 } from '@nestjs/common';
 import { PharmacyService } from './pharmacy.service';
-import { PharmacyInterface } from '../interfaces/pharmacy.interface';
 import { CreatePharmacyDto } from './dto/create-pharmacy.dto';
 import { UpdatePharmacyDto } from './dto/update-pharmacy.dto';
 import { PharmacyResponseDto } from './dto/pharmacy-response.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('pharmacies')
+@UseGuards(JwtAuthGuard)
 export class PharmacyController {
     constructor(private readonly pharmacyService: PharmacyService) { }
 

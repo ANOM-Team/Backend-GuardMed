@@ -9,7 +9,7 @@ export class UserRepository {
   constructor(
     private readonly firestoreService: FirestoreService,
     private readonly pharmacyRepository: PharmacyRepository,
-  ) {}
+  ) { }
 
   async create(user: UserInterface): Promise<string> {
     return this.firestoreService.addDocument(DatabaseTables.USER, user);
