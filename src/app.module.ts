@@ -10,6 +10,7 @@ import { FavoritesModule } from './favorites/favorites.module';
 import { UserModule } from './auth/user.module';
 import { MailModule } from './mail/mail.module';
 import { PharmacyModule } from './pharmacies/pharmacy.module';
+import { ReviewModule } from './reviews/review.module';
 
 @Global()
 @Module({
@@ -22,6 +23,7 @@ import { PharmacyModule } from './pharmacies/pharmacy.module';
     UserModule,
     MailModule,
     PharmacyModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService, UserRepository, PharmacyRepository, ReviewRepository],

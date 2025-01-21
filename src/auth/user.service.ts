@@ -59,12 +59,11 @@ export class UserService {
       code: Math.floor(1000 + Math.random() * 9000),
     };
     const userId = this.userRepository.create(newUser);
-
-    // Send verification email
-    await this.mailService.sendUserConfirmation(
-      registerDto.email,
-      newUser.code,
-    );
+    try {
+      await this.mailService.sendUserConfirmation(registerDto.email, newUser.code);
+    } catch (error) {
+      throw new BadRequestException('Failed to send verification email'+error);
+    }
     return userId;
   }
 
