@@ -20,7 +20,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async login(loginDto: LoginDto) {
     const user = await this.userRepository.findByEmail(loginDto.email);
@@ -59,11 +59,11 @@ export class UserService {
       code: Math.floor(1000 + Math.random() * 9000),
     };
     const userId = this.userRepository.create(newUser);
-    try {
-      await this.mailService.sendUserConfirmation(registerDto.email, newUser.code);
-    } catch (error) {
-      throw new BadRequestException('Failed to send verification email'+error);
-    }
+     await this.mailService.sendUserConfirmation(registerDto.email, newUser.code)
+      .catch(error => {
+        console.error('Failed to send verification email:', error);
+        throw new BadRequestException('Failed to send verification email');
+      });
     return userId;
   }
 

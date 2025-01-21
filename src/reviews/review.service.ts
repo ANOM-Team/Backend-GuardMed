@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { FieldValue } from 'firebase-admin/firestore';
 import { ReviewRepository } from '../repositories/review.repository';
-import { CreateReviewDto, ReviewData } from './dto/create-review.dto';
+import { CreateReviewDto } from './dto/create-review.dto';
 import { ReviewInterface } from '../interfaces/review.interface';
 import { PharmacyService } from '../pharmacies/pharmacy.service';
 
@@ -10,7 +10,7 @@ export class ReviewService {
     constructor(
         private readonly reviewRepository: ReviewRepository,
         private readonly pharmacyService: PharmacyService,
-    ) { }
+    ) {}
 
     async createReview(userId: string, createReviewDto: CreateReviewDto): Promise<ReviewInterface> {
         if (!userId) {
