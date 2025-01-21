@@ -6,12 +6,12 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { MailModule } from '../mail/mail.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
     MailModule,
     PassportModule,
-    MailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
