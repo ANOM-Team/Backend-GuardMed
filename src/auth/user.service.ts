@@ -41,6 +41,7 @@ export class UserService {
     const payload = { username: user.email, sub: user.id };
     return {
       message: 'Login successful',
+      role: user.role,
       access_token: this.jwtService.sign(payload),
     };
   }
