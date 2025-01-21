@@ -24,6 +24,11 @@ export class UserController {
     return this.userService.verify(verifyDto);
   }
 
+  @Post('forgot')
+  async forgotPassword(@Body() email: string) {
+    return this.userService.forgotPassword(email);
+  }
+
   @Post('reset')
   async resetPassword(@Body() code: number, email: string) {
     return this.userService.resetPassword(code, email);

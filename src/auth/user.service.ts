@@ -31,6 +31,7 @@ export class UserService {
       loginDto.password,
       user.password,
     );
+
     if (!isPasswordValid) {
       throw new BadRequestException('Invalid password');
     }
@@ -39,6 +40,7 @@ export class UserService {
     }
     const payload = { username: user.email, sub: user.id };
     return {
+      message: 'Login successful',
       access_token: this.jwtService.sign(payload),
     };
   }
@@ -83,7 +85,9 @@ export class UserService {
     const updated = await this.userRepository.update(verifyDto.id, {
       verified: true,
     });
-    return { message: 'User verified', status: 200 };
+
+    // login after verification
+    return this.login({ email: user.email, password: user.password });
   }
 
   async forgotPassword(email: string) {
