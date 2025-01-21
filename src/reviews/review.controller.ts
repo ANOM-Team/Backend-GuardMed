@@ -10,16 +10,7 @@ export class ReviewController {
     constructor(private readonly reviewService: ReviewService) { }
 
     @Post()
-    async createReview(
-        @Request() req,
-        @Body() createReviewDto: CreateReviewDto,
-    ): Promise<ReviewResponseDto> {
-        console.log('User from request:', req.user);
-
-        if (!req.user || !req.user.userId) {
-            throw new UnauthorizedException('User not authenticated or invalid user data');
-        }
-
+    async createReview( @Request() req,@Body() createReviewDto: CreateReviewDto,): Promise<ReviewResponseDto> {
         const review = await this.reviewService.createReview(req.user.userId, createReviewDto);
         return new ReviewResponseDto(review);
     }
@@ -32,13 +23,6 @@ export class ReviewController {
 
     @Get('user')
     async getUserReviews(@Request() req): Promise<ReviewResponseDto[]> {
-        // Vérification de debug
-        console.log('User from request:', req.user);
-
-        if (!req.user || !req.user.userId) {
-            throw new UnauthorizedException('User not authenticated or invalid user data');
-        }
-
         const reviews = await this.reviewService.getUserReviews(req.user.userId);
         return reviews.map(review => new ReviewResponseDto(review));
     }

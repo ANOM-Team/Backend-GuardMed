@@ -1,10 +1,12 @@
 import { IsString, IsNumber, IsNotEmpty, IsOptional, Min, Max } from 'class-validator';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export interface ReviewData {
     userId: string;
     pharmacyId: string;
     rating: number;
-    createdAt: Date;
+    createdAt: Date | FieldValue;
+    updatedAt: Date | FieldValue;
     comment?: string;
 }
 

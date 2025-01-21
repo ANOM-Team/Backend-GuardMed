@@ -1,13 +1,9 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { FieldValue } from 'firebase-admin/firestore';
 import { ReviewRepository } from '../repositories/review.repository';
 import { CreateReviewDto, ReviewData } from './dto/create-review.dto';
 import { ReviewInterface } from '../interfaces/review.interface';
 import { PharmacyService } from '../pharmacies/pharmacy.service';
-
-interface FirestoreTimestamp {
-    _seconds: number;
-    _nanoseconds: number;
-}
 
 @Injectable()
 export class ReviewService {
@@ -26,11 +22,12 @@ export class ReviewService {
             throw new NotFoundException('Pharmacy not found');
         }
 
-        const reviewData: ReviewData = {
+        const reviewData: Omit<ReviewInterface, 'id'> = {
             userId,
             pharmacyId: createReviewDto.pharmacyId,
             rating: createReviewDto.rating,
-            createdAt: new Date()
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp()
         };
 
         if (createReviewDto.comment?.trim()) {
@@ -38,37 +35,17 @@ export class ReviewService {
         }
 
         const id = await this.reviewRepository.create(reviewData);
-        return { ...reviewData, id } as ReviewInterface;
+        return { ...reviewData, id };
     }
 
     async getPharmacyReviews(pharmacyId: string): Promise<ReviewInterface[]> {
         const reviews = await this.reviewRepository.findAll();
-        return reviews
-            .filter(review => review.pharmacyId === pharmacyId)
-            .map(review => ({
-                ...review,
-                createdAt: 'seconds' in review.createdAt ?
-                    new Date((review.createdAt as unknown as FirestoreTimestamp)._seconds * 1000) :
-                    review.createdAt,
-                updatedAt: 'seconds' in review.updatedAt ?
-                    new Date((review.updatedAt as unknown as FirestoreTimestamp)._seconds * 1000) :
-                    review.updatedAt
-            }));
+        return reviews.filter(review => review.pharmacyId === pharmacyId);
     }
 
     async getUserReviews(userId: string): Promise<ReviewInterface[]> {
         const reviews = await this.reviewRepository.findAll();
-        return reviews
-            .filter(review => review.userId === userId)
-            .map(review => ({
-                ...review,
-                createdAt: 'seconds' in review.createdAt ?
-                    new Date((review.createdAt as unknown as FirestoreTimestamp)._seconds * 1000) :
-                    review.createdAt,
-                updatedAt: 'seconds' in review.updatedAt ?
-                    new Date((review.updatedAt as unknown as FirestoreTimestamp)._seconds * 1000) :
-                    review.updatedAt
-            }));
+        return reviews.filter(review => review.userId === userId);
     }
 
     async deleteReview(userId: string, reviewId: string): Promise<void> {

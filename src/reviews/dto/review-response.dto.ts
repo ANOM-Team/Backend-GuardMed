@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export class ReviewResponseDto {
     @Expose()
@@ -17,7 +18,10 @@ export class ReviewResponseDto {
     comment?: string;
 
     @Expose()
-    createdAt: Date;
+    createdAt: FieldValue;
+
+    @Expose()
+    updatedAt: FieldValue;
 
     constructor(partial: Partial<ReviewResponseDto>) {
         Object.assign(this, partial);
