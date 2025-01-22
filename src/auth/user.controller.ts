@@ -3,7 +3,9 @@ import { UserService } from './user.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { VerifyDto } from './dto/verify.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { ResetDto } from './dto/reset.dto';
+import { ForgotDto } from './dto/forgot.dto';
+import { NewPasswordDto } from './dto/new-password.dto';
 
 @Controller('auth')
 export class UserController {
@@ -25,17 +27,17 @@ export class UserController {
   }
 
   @Post('forgot')
-  async forgotPassword(@Body() email: string) {
-    return this.userService.forgotPassword(email);
+  async forgotPassword(@Body() ForgotDto: ForgotDto) {
+    return this.userService.forgotPassword(ForgotDto);
   }
 
   @Post('reset')
-  async resetPassword(@Body() code: number, email: string) {
-    return this.userService.resetPassword(code, email);
+  async resetPassword(@Body() ResetDto: ResetDto) {
+    return this.userService.resetPassword(ResetDto);
   }
 
   @Post('new-password')
-  async newPassword(@Body() password: string, email: string) {
-    return this.userService.newPassword(password, email);
+  async newPassword(@Body() newPasswordDto: NewPasswordDto) {
+    return this.userService.newPassword(newPasswordDto);
   }
 }
