@@ -15,7 +15,7 @@ import { PharmacyService } from './pharmacy.service';
 import { CreatePharmacyDto } from './dto/create-pharmacy.dto';
 import { UpdatePharmacyDto } from './dto/update-pharmacy.dto';
 import { PharmacyResponseDto } from './dto/pharmacy-response.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { PharmacyInterface } from '../interfaces/pharmacy.interface';
 
 @Controller('pharmacies')
