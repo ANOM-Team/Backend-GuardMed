@@ -5,7 +5,7 @@ import { ReviewInterface } from '../interfaces/review.interface';
 
 @Injectable()
 export class ReviewRepository {
-  constructor(private readonly firestoreService: FirestoreService) {}
+  constructor(private readonly firestoreService: FirestoreService) { }
 
   async create(review: ReviewInterface): Promise<string> {
     return this.firestoreService.addDocument(DatabaseTables.REVIEW, review);
@@ -35,4 +35,6 @@ export class ReviewRepository {
   async delete(id: string): Promise<void> {
     return this.firestoreService.deleteDocument(DatabaseTables.REVIEW, id);
   }
+
+  
 }

@@ -9,6 +9,7 @@ import { ReviewRepository } from './repositories/review.repository';
 import { FavoritesModule } from './favorites/favorites.module';
 import { UserModule } from './auth/user.module';
 import { PharmacyModule } from './pharmacies/pharmacy.module';
+import { ReviewModule } from './reviews/review.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Global()
@@ -21,6 +22,7 @@ import { JwtModule } from '@nestjs/jwt';
     FavoritesModule,
     UserModule,
     PharmacyModule,
+    ReviewModule,
     JwtModule
   ],
   controllers: [AppController],

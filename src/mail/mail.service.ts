@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
@@ -13,6 +13,9 @@ export class MailService {
       context: {
         code,
       },
+    }).catch(error => {
+      console.error('Failed to send verification email:', error);
+      throw new BadRequestException('Failed to send verification email');
     });
   }
 

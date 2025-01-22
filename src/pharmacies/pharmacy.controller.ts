@@ -19,7 +19,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PharmacyInterface } from '../interfaces/pharmacy.interface';
 
 @Controller('pharmacies')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard('jwt'))
 export class PharmacyController {
     constructor(private readonly pharmacyService: PharmacyService) { }
 
@@ -29,7 +29,9 @@ export class PharmacyController {
             const id = await this.pharmacyService.createPharmacy(createPharmacyDto);
             return { id };
         } catch (error) {
-            throw new HttpException('Failed to create pharmacy', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException('Failed to create pharmacy', HttpStatus.INTERNAL_SERVER_ERROR
+
+            );
         }
     }
 
