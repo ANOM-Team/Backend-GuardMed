@@ -20,7 +20,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async login(loginDto: LoginDto) {
     const user = await this.userRepository.findByEmail(loginDto.email);
@@ -59,12 +59,7 @@ export class UserService {
       code: Math.floor(1000 + Math.random() * 9000),
     };
     const userId = this.userRepository.create(newUser);
-
-    // Send verification email
-    await this.mailService.sendUserConfirmation(
-      registerDto.email,
-      newUser.code,
-    );
+    await this.mailService.sendUserConfirmation(registerDto.email, newUser.code);
     return userId;
   }
 

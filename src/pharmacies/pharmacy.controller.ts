@@ -14,10 +14,10 @@ import { PharmacyService } from './pharmacy.service';
 import { CreatePharmacyDto } from './dto/create-pharmacy.dto';
 import { UpdatePharmacyDto } from './dto/update-pharmacy.dto';
 import { PharmacyResponseDto } from './dto/pharmacy-response.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('pharmacies')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard('jwt'))
 export class PharmacyController {
     constructor(private readonly pharmacyService: PharmacyService) { }
 
@@ -27,7 +27,9 @@ export class PharmacyController {
             const id = await this.pharmacyService.createPharmacy(createPharmacyDto);
             return { id };
         } catch (error) {
-            throw new HttpException('Failed to create pharmacy', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException('Failed to create pharmacy', HttpStatus.INTERNAL_SERVER_ERROR
+
+            );
         }
     }
 
