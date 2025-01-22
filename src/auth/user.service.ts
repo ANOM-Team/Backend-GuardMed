@@ -10,9 +10,10 @@ import { RegisterDto } from './dto/register.dto';
 import { VerifyDto } from './dto/verify.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { MailModule } from 'src/mail/mail.module';
 import { MailService } from 'src/mail/mail.service';
-import { messaging } from 'firebase-admin';
+import { ResetDto } from './dto/reset.dto';
+import { ForgotDto } from './dto/forgot.dto';
+import { NewPasswordDto } from './dto/new-password.dto';
 
 @Injectable()
 export class UserService {
@@ -31,6 +32,7 @@ export class UserService {
       loginDto.password,
       user.password,
     );
+
     if (!isPasswordValid) {
       throw new BadRequestException('Invalid password');
     }
@@ -39,6 +41,8 @@ export class UserService {
     }
     const payload = { username: user.email, sub: user.id };
     return {
+      message: 'Login successful',
+      role: user.role,
       access_token: this.jwtService.sign(payload),
     };
   }
@@ -58,9 +62,16 @@ export class UserService {
       verified: false,
       code: Math.floor(1000 + Math.random() * 9000),
     };
-    const userId = this.userRepository.create(newUser);
-    await this.mailService.sendUserConfirmation(registerDto.email, newUser.code);
-    return userId;
+    
+    const userId = await this.userRepository.create(newUser);
+
+    // Send verification email
+    await this.mailService.sendUserConfirmation(
+      registerDto.email,
+      newUser.code,
+    );
+
+    return { message: 'User created', userId, email: registerDto.email };
   }
 
   async verify(verifyDto: VerifyDto) {
@@ -78,38 +89,39 @@ export class UserService {
     const updated = await this.userRepository.update(verifyDto.id, {
       verified: true,
     });
-    return { message: 'User verified', status: 200 };
+
+    return this.login({ email: user.email, password: user.password });
   }
 
-  async forgotPassword(email: string) {
-    const user = await this.userRepository.findByEmail(email);
+  async forgotPassword(ForgotDto: ForgotDto) {
+    const user = await this.userRepository.findByEmail(ForgotDto.email);
     if (!user) {
       throw new NotFoundException('User not found');
     }
     const code = Math.floor(100000 + Math.random() * 900000);
     await this.userRepository.update(user.id, { code });
-    await this.mailService.sendResetPassword(email, code);
-    return email;
+    await this.mailService.sendResetPassword(ForgotDto.email, code);
+    return { message: 'Code sent to email', email: ForgotDto.email };
   }
 
-  async resetPassword(code: number, email: string) {
-    const user = await this.userRepository.findByEmail(email);
+  async resetPassword(ResetDto: ResetDto) {
+    const user = await this.userRepository.findByEmail(ResetDto.email);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if (code !== user.code) {
+    if (ResetDto.code !== user.code) {
       throw new BadRequestException('Invalid code');
     }
-    return true;
+    return { message: 'Code verified', email: ResetDto.email };
   }
 
-  async newPassword(email: string, password: string) {
-    const user = await this.userRepository.findByEmail(email);
+  async newPassword(newPasswordDto: NewPasswordDto) {
+    const user = await this.userRepository.findByEmail(newPasswordDto.email);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(newPasswordDto.password, 10);
     await this.userRepository.update(user.id, { password: hashedPassword });
-    return true;
+    return { message: 'Password updated', email: newPasswordDto.email };
   }
 }
