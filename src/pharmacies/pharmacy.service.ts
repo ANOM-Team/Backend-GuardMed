@@ -9,7 +9,18 @@ export class PharmacyService {
     constructor(private readonly pharmacyRepository: PharmacyRepository) { }
 
     async createPharmacy(pharmacy: CreatePharmacyDto): Promise<string> {
-        return this.pharmacyRepository.create(pharmacy);
+        const plainPharmacy = {
+            ...pharmacy,
+            location: {
+                lat: pharmacy.location.lat,
+                lng: pharmacy.location.lng
+            },
+            openingHours: {
+                open_at: pharmacy.openingHours.open_at,
+                close_at: pharmacy.openingHours.close_at
+            }
+        };
+        return this.pharmacyRepository.create(plainPharmacy);
     }
 
     async getAllPharmacies(): Promise<PharmacyInterface[]> {
