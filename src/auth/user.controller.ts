@@ -36,6 +36,11 @@ export class UserController {
     return this.userService.resetPassword(ResetDto);
   }
 
+  @Post('resend')
+  async resendCode(@Body() ForgotDto: ForgotDto) {
+    return this.userService.resendCode(ForgotDto);
+  }
+
   @Post('new-password')
   async newPassword(@Body() newPasswordDto: NewPasswordDto) {
     return this.userService.newPassword(newPasswordDto);

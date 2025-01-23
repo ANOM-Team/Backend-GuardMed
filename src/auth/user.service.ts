@@ -34,7 +34,7 @@ export class UserService {
     );
 
     if (!isPasswordValid) {
-      throw new BadRequestException('Invalid password');
+      throw new BadRequestException('Invalid email or password');
     }
     if (!user.verified) {
       throw new UnauthorizedException('User not verified');
@@ -89,7 +89,7 @@ export class UserService {
       verified: true,
     });
 
-    return this.login({ email: user.email, password: user.password });
+    return { message: 'User verified', email: user.email, userId: user.id };
   }
 
   async forgotPassword(ForgotDto: ForgotDto) {
@@ -100,7 +100,11 @@ export class UserService {
     const code = Math.floor(100000 + Math.random() * 900000);
     await this.userRepository.update(user.id, { code });
     await this.mailService.sendResetPassword(ForgotDto.email, code);
-    return { message: 'Code sent to email', email: ForgotDto.email };
+    return {
+      message: 'Code sent to email',
+      email: ForgotDto.email,
+      userId: user.id,
+    };
   }
 
   async resetPassword(ResetDto: ResetDto) {
@@ -122,5 +126,20 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(newPasswordDto.password, 10);
     await this.userRepository.update(user.id, { password: hashedPassword });
     return { message: 'Password updated', email: newPasswordDto.email };
+  }
+
+  async resendCode(ForgotDto: ForgotDto) {
+    const user = await this.userRepository.findByEmail(ForgotDto.email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const code = Math.floor(1000 + Math.random() * 9000);
+    await this.userRepository.update(user.id, { code: code });
+    await this.mailService.sendUserConfirmation(ForgotDto.email, code);
+    return {
+      message: 'Code sent to email',
+      email: ForgotDto.email,
+      userId: user.id,
+    };
   }
 }
