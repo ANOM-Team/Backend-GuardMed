@@ -1,8 +1,11 @@
+import { FieldValue } from 'firebase-admin/firestore';
+
 export interface ReviewInterface {
-  id: string;
-  user: string;
-  pharmacy: string;
+  id?: string;
+  userId: string;
+  pharmacyId: string;
   rating: number;
-  comment: string;
-  created_at: string;
+  createdAt: FieldValue;
+  updatedAt: FieldValue;
+  comment?: string;
 }

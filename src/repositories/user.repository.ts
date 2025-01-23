@@ -77,6 +77,7 @@ export class UserRepository {
       favorites.map((id) => this.pharmacyRepository.findById(id)),
     );
     return favoritePharmacy;
+
   }
   async removeField(table: string, field: string) {
     return this.firestoreService.removeField(table, field);
