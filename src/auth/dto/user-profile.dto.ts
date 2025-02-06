@@ -1,17 +1,17 @@
-export interface UserInterface {
-  id?: string;
+export class UserProfileDto {
+  id: string;
   name: string;
   email: string;
-  password: string;
-  favorites: string[];
   role: string;
   verified: boolean;
-  code?: number;
   profilePicture?: string;
   bannerPicture?: string;
   bio?: string;
   phoneNumber?: string;
   address?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+  favorites: string[];
+
+  constructor(partial: Partial<UserProfileDto>) {
+    Object.assign(this, partial);
+  }
+} 

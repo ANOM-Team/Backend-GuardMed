@@ -72,8 +72,8 @@ export class PharmacyController {
             return { message: 'Pharmacy updated successfully' };
         } catch (error) {
             throw new HttpException(
-                'Failed to update pharmacy',
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                error.message || 'Failed to update pharmacy',
+                error.status || HttpStatus.INTERNAL_SERVER_ERROR,
             );
         }
     }

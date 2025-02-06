@@ -7,40 +7,42 @@ import { UserController } from './user.controller';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { MailModule } from '../mail/mail.module';
 import { StorageModule } from '../storage/storage.module';
+import { FirestoreModule } from '../firestore/firestore.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { extname } from 'path';
 import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { LocalStorageService } from '../storage/local-storage.service';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
-
     MailModule,
     PassportModule,
-    JwtModule.registerAsync({
-
-      imports: [ConfigModule,
-        MulterModule.register({
-          storage: diskStorage({
-            destination: './uploads',
-            filename: (req, file, cb) => {
-              const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-              cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
-            },
-          }),
-        }),
-      ],
-      
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '7d' },
-      }),
-      inject: [ConfigService],
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '7d' },
     }),
     StorageModule,
+    FirestoreModule,
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+          cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+    }),
   ],
   controllers: [UserController],
-  providers: [UserService, JwtStrategy, LocalStorageService],
-
+  providers: [
+    UserService,
+    JwtStrategy,
+    LocalStorageService,
+  ],
+  exports: [
+    UserService,
+    JwtModule,
+  ],
 })
-export class UserModule { }
+export class AuthModule {} 
